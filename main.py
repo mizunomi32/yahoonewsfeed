@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 
 import feedparser
-from urllib import urlopen, quote_plus
-from BeautifulSoup import BeautifulSoup
+import re
 from datetime import datetime
 from time import mktime
-import yahooapi.jlp as jlp
+import getapi
 
 #RSSのURL
 RSS_URL  = "http://news.yahoo.co.jp/pickup/rss.xml"
-YAHOO_API = "http://jlp.yahooapis.jp/MAService/V1/parse?appid=dj0zaiZpPWFncG1ZMXUyNU5TRiZzPWNvbnN1bWVyc2VjcmV0Jng9MjM-&sentence="
+
 #RSSの取得
 feed = feedparser.parse(RSS_URL)
-
+allword=''
+count=0
+feel=0
 #RSSのタイトル
 print feed.feed.title
 
@@ -31,25 +31,23 @@ for entry in range(len(feed.entries)):
     tmp = feed.entries[entry].published_parsed
     published_datetime = datetime.fromtimestamp(mktime(tmp))
 
-    title.replace(' ', '')
-    title.replace(u'　', '')
     #表示
     print title
     print link
     print published_string
     print published_datetime
-    getYAHOO_API = YAHOO_API + quote_plus(title.encode('utf-8'))
-    feed2 = feedparser.parse(getYAHOO_API)
-    print u"~分析結果~"
-    print getYAHOO_API
+    allword= allword + title
 
-    for entry2 in range(len(feed2.entries)):
-        #RSSの内容を一件づつ処理する
-        words = feed2.entries[entry2].surface
-        read = feed2.entries[entry2].reading
-        pos = feed2.entries[entry2].pos
-
-        #表示
-        print words
-        print read
-        print pos
+for words in getapi.split(allword):
+    a = words
+    for line in open('pn_ja.dic', 'r'):
+        dic=line.split(":")
+        dicword =dic[0]
+        if a==unicode(dicword, 'utf_8'):
+            feel = feel + float(dic[3].rstrip())
+            count = count + 1
+print '================================'
+print u'ネガティブ/ポジティブ値'
+print feel
+print u'平均値'
+print feel/count
