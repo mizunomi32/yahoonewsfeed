@@ -3,7 +3,6 @@
 
 
 import feedparser
-import re
 from datetime import datetime
 from time import mktime
 import getapi
@@ -39,11 +38,11 @@ for entry in range(len(feed.entries)):
     allword= allword + title
 
 for words in getapi.split(allword):
-    a = words
+
     for line in open('pn_ja.dic', 'r'):
         dic=line.split(":")
-        dicword =dic[0]
-        if a==unicode(dicword, 'utf_8'):
+
+        if words==unicode(dic[0], 'utf_8'):
             feel = feel + float(dic[3].rstrip())
             count = count + 1
 print '================================'
